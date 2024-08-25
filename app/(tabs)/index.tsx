@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Button, Text, View } from 'react-native';
 import { BarCodeEvent, BarCodeScanner } from 'expo-barcode-scanner';
 
-import { HelloWave } from '@/components/HelloWave';
+import { QrIcon } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Scanner } from '@/components/Scanner';
-import { ScannedData } from '@/components/ScannedData';
+import { ShowDevice } from '@/components/ScannedData';
+import { Link } from 'expo-router';
 
 export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -42,10 +43,16 @@ export default function HomeScreen() {
       }>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Escaneá el Equipo</ThemedText>
-        <HelloWave />
+        <QrIcon />
       </ThemedView>
-      <ScannedData data={scannedData} />
+      <ShowDevice rawData={scannedData} />
       <Scanner onBarCodeScanned={handleBarCodeScanned} />
+      {/* <Link href={{
+        pathname: '/details/[serial]',
+        params: { serial: "100610B0463" }
+      }}>
+        IR
+      </Link> */}
     </ParallaxScrollView>
   );
 }
@@ -58,8 +65,8 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   logo: {
-    alignSelf:"center",
-    justifyContent:"center"
+    alignSelf: "center",
+    justifyContent: "center"
   },
   scannerContainer: {
     flex: 1,

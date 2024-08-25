@@ -1,5 +1,6 @@
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { BarCodeEvent, BarCodeScannedCallback, BarCodeScanner } from "expo-barcode-scanner";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 interface Props {
     onBarCodeScanned: (barCodeEvent: BarCodeEvent | null) => void,
@@ -7,20 +8,42 @@ interface Props {
 
 export function Scanner(props: Props) {
     const { onBarCodeScanned } = props
-    const [scanned, setScanned] = useState(false);
+    const [showScanner, setShowScanner] = useState(false);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (showScanner) {
+            timer = setTimeout(() => {
+                setShowScanner(false);
+            }, 30000);
+        }
+        return () => clearTimeout(timer);
+    }, [showScanner]);
+
+    const handlePress = () => {
+        const newState = !showScanner
+        setShowScanner(newState);
+        if (newState) onBarCodeScanned(null);
+    };
+
+    const handleBarCodeScanned = (event: BarCodeEvent) => {
+        onBarCodeScanned(event);
+        setShowScanner(false);
+    }
 
     return (
         <>
             {
-                scanned ?
-                    <Button title="Toca para escanear de nuevo" onPress={() => { onBarCodeScanned(null); setScanned(false) }} />
-                    : <View style={styles.scannerContainer} >
+                showScanner ?
+                    <View style={styles.scannerContainer} >
                         <BarCodeScanner
-                            onBarCodeScanned={scanned ? undefined : (p) => { onBarCodeScanned(p); setScanned(true) }}
+                            onBarCodeScanned={!showScanner ? undefined : handleBarCodeScanned}
                             style={StyleSheet.absoluteFillObject}
                         />
                     </View >
+                    : null
             }
+            <Button title={showScanner ? "Cerrar" : "Toca para escanear"} onPress={handlePress} />
         </>
     )
 

@@ -7,10 +7,11 @@ import Animated, {
   withSequence,
 } from 'react-native-reanimated';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { ThemedText } from '@/components/ThemedText';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
-export function HelloWave() {
+export function QrIcon() {
   const rotationAnimation = useSharedValue(0);
+  const color = useThemeColor({}, 'text');
 
   rotationAnimation.value = withRepeat(
     withSequence(withTiming(25, { duration: 150 }), withTiming(0, { duration: 150 })),
@@ -23,7 +24,7 @@ export function HelloWave() {
 
   return (
     <Animated.View style={animatedStyle}>
-      <AntDesign  name="qrcode" size={50} color="white" />
+      <AntDesign  name="qrcode" size={50} color={color}/>
     </Animated.View>
   );
 }
