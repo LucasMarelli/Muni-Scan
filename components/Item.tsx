@@ -1,9 +1,12 @@
-import { format, formatDistanceToNow } from "date-fns";
+import { format, formatDate, formatDistanceToNow } from "date-fns";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
-import { StyleSheet, View } from "react-native";
+import { Linking, StyleSheet, TouchableOpacity, View } from "react-native";
 import { es } from 'date-fns/locale';
 import { Colors } from '@/constants/Colors';
+import { Link } from "expo-router";
+import { Feather } from "@expo/vector-icons";
+import { customFormatDate } from "@/utils/date";
 
 
 type Props = {
@@ -11,17 +14,17 @@ type Props = {
     title?: string,
     excludeFields: string[],
 }
+
+type DataTypes = "text" | "url" | "date"
+
 export function Item({ title, excludeFields = [], data }: Props) {
     const isDate = (value: any) => {
         if (value.length < 10 || !isNaN(value)) return false
         return !isNaN(Date.parse(value));
     }
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        const formattedDate = format(date, "dd/MM/yyyy HH:mm");
-        const distance = formatDistanceToNow(date, { addSuffix: true, locale: es });
-        return `${formattedDate} (${distance})`;
+    const getType = (value: string) => {
+        return isDate(value) ? "date" : value.startsWith("https://") ? "url" : "text"
     }
 
     return (
@@ -29,17 +32,17 @@ export function Item({ title, excludeFields = [], data }: Props) {
             {title ? <ThemedText type='subtitle'>{title}</ThemedText> : null}
             {
                 Object.keys(data).map((key) => {
-
-                    const value = data[key as keyof typeof data];
-                    const formattedValue = isDate(value) ? formatDate(value) : value;
                     //Excluye campos innecesarios
                     if (excludeFields.includes(key)) return null
+                    const value = String(data[key as keyof typeof data]).trim();
                     //No muestra valores vacíos
                     if (!value) return null
+                    const type = getType(value)
+                    const Item = ItemMap[type]
                     return (
                         <View key={key} style={styles.row}>
                             <ThemedText style={{ ...styles.text, color: "gray" }}>{`${key}: `}</ThemedText>
-                            <ThemedText style={styles.text}>{formattedValue}</ThemedText>
+                            <Item value={value} />
                         </View>
                     )
                 })
@@ -48,6 +51,19 @@ export function Item({ title, excludeFields = [], data }: Props) {
 
     )
 }
+
+
+const ItemMap: Record<DataTypes, React.FC<{ value: string }>> = {
+    text: ({ value }) => <ThemedText style={styles.text}>{value}</ThemedText>,
+    url: ({ value }) =>
+        <TouchableOpacity onPress={() => Linking.openURL(value)} style={{ flexDirection: "row", alignItems: "center", borderRadius: 10 }}>
+            <ThemedText style={{ ...styles.text }} > {"Ver enlace"}</ThemedText>
+            <Feather name="link" size={20} color={Colors.light.icon} />
+        </TouchableOpacity>,
+    date: ({ value }) => <ThemedText style={styles.text}>{customFormatDate(value)}</ThemedText>
+}
+
+
 
 const styles = StyleSheet.create({
     container: {
