@@ -4,13 +4,22 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemedText } from "./ThemedText";
 import { repairTableService } from "@/services/RepairTable";
 import { Link } from "expo-router";
+import { DeviceStatus } from "./DeviceStatus";
 
 
 interface Props {
     rawData?: string | null
 }
 export function ShowDevice(props: Props) {
-    const { rawData: data } = props
+    // const { rawData: data } = props
+    const data =JSON.stringify( {
+        Marca: "Samsung",
+        Modelo: "S20",
+        Serie: "144-5388",
+        Sector: "A",
+        Tipo: "Celular"
+
+    } as Record<"Tipo" | "Marca" | "Modelo" | "Serie" | "Sector", string>)
     if (!data) return null
     const [deviceData, setDeviceData] = useState<Record<"Tipo" | "Marca" | "Modelo" | "Serie" | "Sector", string> | null>(null)
 
@@ -30,15 +39,17 @@ export function ShowDevice(props: Props) {
         <View style={styles.container}>
             {
                 Object.keys(deviceData).map((key) => {
-                    return (<>
+                    return (
                         <View style={{ flexDirection: "row" }}>
                             <ThemedText style={{ ...styles.text, color: "gray" }}>{`${key}: `}</ThemedText>
                             <ThemedText style={{ ...styles.text }}>{deviceData[key as keyof typeof deviceData]}</ThemedText>
                         </View>
-                    </>
                     )
                 })
             }
+            <View style={styles.buttonContainer}>
+            <DeviceStatus serial={deviceData.Serie}/>
+            </View>
             <View style={styles.buttonContainer}>
                 <Button title="Ingreso Para reparar" onPress={handleOnPressRepair} />
             </View>
