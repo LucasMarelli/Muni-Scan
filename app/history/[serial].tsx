@@ -22,9 +22,9 @@ export default function HistoryScreen() {
     async function getAndSetData(serial: string) {
         setLoading(true)
         try {
-            const data_ = (await repairTableService.getBySerial(serial)).data;
+            const data_ = (await repairTableService.findBySerial(serial)).data;
             //data_.push(data_[0], data_[0])
-            if (Array.isArray(data_)) setData(data_);
+            if (Array.isArray(data_)) setData(data_.sort((a, b) => new Date(b.Timestamp).getTime() - new Date(a.Timestamp).getTime()));
         } finally {
             setLoading(false)
         }
@@ -40,7 +40,7 @@ export default function HistoryScreen() {
                         <ThemedView style={styles.viewContainer}>
                             {
                                 data.map((d, index) => (
-                                    <Item data={d} title={`Servicio ${index + 1}/${data.length}`} excludeFields={exludedFields}></Item>
+                                    <Item key={index} data={d} title={`Servicio ${data.length - index}/${data.length}`} excludeFields={exludedFields}></Item>
                                 ))
                             }
                         </ThemedView>

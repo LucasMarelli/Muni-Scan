@@ -3,7 +3,7 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-import { StatusOrDeliveredValues } from "@/components/DeviceStatus";
+import { StatusOrDeliveredValues } from "@/components/DeviceStatus/DeviceStatus";
 
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
@@ -33,6 +33,6 @@ export const statusColors: Record<StatusOrDeliveredValues, string> = {
   "En Service": "#E6CFF2",
   Reparado: "#11734B",
   "Sin Reparación": "#B10202",
-  Si: "#11734B",
+  Sí: "#11734B",
   No: "#B10202",
 };

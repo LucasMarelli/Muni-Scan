@@ -1,6 +1,6 @@
 export interface Repair {
     id: string;
-    timestamp: string;
+    Timestamp: string;
     Equipo: string;
     Serie: string;
     Sector?: string;
@@ -8,11 +8,11 @@ export interface Repair {
     Entregado?: DeliveredStatus;
     Observación?: string;
     Salida?: string;
-    "¿A quien se entregó?"?: string;
+    "¿A Quien se entregó?"?: string;
 }
 
 export enum DeliveredStatus {
-    Delivered = "Si",
+    Delivered = "Sí",
     NotDelivered = "No"
 }
 
