@@ -107,7 +107,7 @@ export function DeviceStatus({ serial }: { serial: string }) {
         onClose={() => setDeliveredModalVisible(false)}
         onConfirm={handleConfirmChange}
         defaultValue={{
-          Entregado: DeliveredStatus.Delivered,
+          Entregado: data["Entregado"],
           "¿A Quien se entregó?": data["¿A Quien se entregó?"],
         }}
         schemas={deliveredSchema}
@@ -120,7 +120,7 @@ export function DeviceStatus({ serial }: { serial: string }) {
         onClose={() => setStatusModalVisible(false)}
         onConfirm={handleConfirmChange}
         defaultValue={{
-          Estado: Status.Repaired,
+          Estado: data.Estado,
           Observación: data.Observación,
         }}
         schemas={statusSchema}
