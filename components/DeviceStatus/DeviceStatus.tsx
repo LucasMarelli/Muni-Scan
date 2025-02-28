@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { ActivityIndicator, Chip } from "react-native-paper";
 import { EditModal, Schemas } from "../EditModal/EditStatusModal";
+
 import { DeliveredStatus, Repair, Status } from "@/entities/repair.entity";
 import { statusColors } from "@/constants/Colors";
 import { repairTableService } from "@/services/RepairTable";
@@ -15,7 +16,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { ThemedView } from "../ThemedView";
 import { deliveredSchema, statusSchema } from "./Schemas";
 import { set } from "date-fns";
-
+import _ from "lodash";
 export function DeviceStatus({ serial }: { serial: string }) {
   const [data, setData] = useState<Repair | null>(null);
   const [statusModalVisible, setStatusModalVisible] = useState(false);
@@ -33,7 +34,12 @@ export function DeviceStatus({ serial }: { serial: string }) {
       setError(null);
       setLoading(true);
       newData = (await repairTableService.findLastBySerial(serial)).data;
-      if (!newData) setError("No hay registro de reparación");
+      if (!newData) {
+        setError("No hay registro de reparación");
+        setData(null);
+        setId(null);
+        return
+      }
     } catch (err) {
       console.error(err);
       setError("Error al obtener estado");
@@ -45,10 +51,10 @@ export function DeviceStatus({ serial }: { serial: string }) {
       newData.Estado = newData.Estado || Status.Unreviewed;
       newData.Entregado = newData.Entregado || DeliveredStatus.NotDelivered;
     }
-    setId(newData?.id ?? null);
+    setId(newData.id);
     setData(newData);
   }
-  const handleConfirmChange = async (data: Partial<Repair>) => {
+  const handleConfirmChange = async (newData: Partial<Repair>) => {
     setStatusModalVisible(false);
     setDeliveredModalVisible(false);
     if (!id)
@@ -58,12 +64,27 @@ export function DeviceStatus({ serial }: { serial: string }) {
       );
     setLoading(true);
     try {
-      await repairTableService.updateById(id, data);
+      // Si no hay cambios no actualiza
+      let noChanges = true;
+      for (const _key in newData) {
+        if (Object.prototype.hasOwnProperty.call(newData, _key)) {
+          const key = _key as keyof Repair;
+          noChanges = newData[key] === data?.[key];
+          if (!noChanges) break;
+        }
+      }
+      if (noChanges) return;
+      //Si cambió a entregado agrega estampa de tiempo en Salida.
+      const changesToDelivered =
+        newData.Entregado === DeliveredStatus.Delivered &&
+        newData.Entregado !== data?.Entregado;
+      if (changesToDelivered) newData.Salida = new Date().toISOString();
+      await repairTableService.updateById(id, newData);
       await getAndSetData(serial);
     } catch (error) {
       Alert.alert(
         "Error",
-        "No se pudo actualizar el estado. Por favor, inténtalo de nuevo\n" +
+        "No se pudo actualizar el estado. Por favor, intentalo de nuevo\n" +
           error
       );
     } finally {
@@ -73,9 +94,9 @@ export function DeviceStatus({ serial }: { serial: string }) {
   if (loading) return <ActivityIndicator />;
   if (error)
     return <Error onPress={() => getAndSetData(serial)} error={error} />;
-  if (!data) return;
+  if (!data) return null;
   return (
-    <ThemedView style={{ flexDirection: "row", gap: 10 }}>
+    <ThemedView style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
       <TouchableOpacity onPress={() => setStatusModalVisible(true)}>
         {data["Estado"] && (
           <Chip
@@ -100,6 +121,14 @@ export function DeviceStatus({ serial }: { serial: string }) {
               : data["Entregado"]}
           </Chip>
         )}
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => getAndSetData(serial)}>
+        <AntDesign
+          name="reload1"
+          size={20}
+          style={{ marginLeft: 5, color: "gray" }}
+        />
       </TouchableOpacity>
 
       <EditModal<Pick<Repair, "Entregado" | "¿A Quien se entregó?">>
