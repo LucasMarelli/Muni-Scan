@@ -9,6 +9,7 @@ export interface Repair {
     Observación?: string;
     Salida?: string;
     "¿A Quien se entregó?"?: string;
+    Enlace: string;
 }
 
 export enum DeliveredStatus {

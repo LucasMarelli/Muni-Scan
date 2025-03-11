@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Button, Text, View } from 'react-native';
-import { BarCodeEvent, BarCodeScanner } from 'expo-barcode-scanner';
+import React, { useEffect, useState } from "react";
+import { Image, StyleSheet, Button, Text, View } from "react-native";
+import { BarCodeEvent, BarCodeScanner } from "expo-barcode-scanner";
 
-import { QrIcon } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { Scanner } from '@/components/Scanner';
-import { ShowDevice } from '@/components/ScannedData';
-import { Link } from 'expo-router';
+import { QrIcon } from "@/components/HelloWave";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Scanner } from "@/components/Scanner";
+import { ShowDevice } from "@/components/ScannedData";
+import { Link } from "expo-router";
+import { Repair } from "@/entities/repair.entity";
+import { Sign } from "@/components/EditModal/input/SignatureInput";
 
 export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -17,7 +19,9 @@ export default function HomeScreen() {
   useEffect(() => {
     (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
+      setHasPermission(status === "granted");
+      //BORRAR LUEGO DE PRUEBAS
+      setScannedData(JSON.stringify({ Serie: "020238QF900498E" } as Partial<Repair>));
     })();
   }, []);
 
@@ -34,13 +38,14 @@ export default function HomeScreen() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: 'white', dark: 'white' }}
+      headerBackgroundColor={{ light: "white", dark: "white" }}
       headerImage={
         <Image
-          source={require('@/assets/images/logo-municipalidad.png')}
+          source={require("@/assets/images/logo-municipalidad.png")}
           style={styles.logo}
         />
-      }>
+      }
+    >
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Escaneá el Equipo</ThemedText>
         <QrIcon />
@@ -53,32 +58,35 @@ export default function HomeScreen() {
       }}>
         IR
       </Link> */}
+      <View>
+        <Sign></Sign>
+      </View>
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginVertical: 16,
   },
   logo: {
     alignSelf: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   scannerContainer: {
     flex: 1,
     height: 400,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
     marginVertical: 16,
   },
   scannedDataContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

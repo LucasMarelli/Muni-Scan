@@ -38,7 +38,7 @@ export function DeviceStatus({ serial }: { serial: string }) {
         setError("No hay registro de reparación");
         setData(null);
         setId(null);
-        return
+        return;
       }
     } catch (err) {
       console.error(err);
@@ -131,13 +131,14 @@ export function DeviceStatus({ serial }: { serial: string }) {
         />
       </TouchableOpacity>
 
-      <EditModal<Pick<Repair, "Entregado" | "¿A Quien se entregó?">>
+      <EditModal<Pick<Repair, "Entregado" | "¿A Quien se entregó?" | "Enlace">>
         visible={deliveredModalVisible}
         onClose={() => setDeliveredModalVisible(false)}
         onConfirm={handleConfirmChange}
         defaultValue={{
           Entregado: data["Entregado"],
           "¿A Quien se entregó?": data["¿A Quien se entregó?"],
+          Enlace: data.Enlace,
         }}
         schemas={deliveredSchema}
         title={"Entrega de Última Reparación"}

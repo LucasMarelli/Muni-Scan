@@ -3,11 +3,11 @@ import { View, Text, StyleSheet, Alert } from "react-native";
 import { Button, Portal, Dialog, TextInput } from "react-native-paper";
 import { ThemedText } from "../ThemedText";
 import { ThemedView } from "../ThemedView";
-import { Input } from "./Input";
+import { Input } from "./input/Input";
 export type Schema<T> = {
   label?: string;
   fieldName: keyof T;
-  type?: "picker" | "text";
+  type?: "picker" | "text" | "signature";
   required?: boolean | ((data: T) => boolean);
   options?: { label: string; value: string; color?: string }[];
 };
@@ -104,5 +104,4 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
   },
-
 });

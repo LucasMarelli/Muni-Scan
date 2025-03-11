@@ -3,7 +3,7 @@ import { Schemas } from "../EditModal/EditStatusModal";
 import { statusColors } from "@/constants/Colors";
 
 export const deliveredSchema: Schemas<
-  Pick<Repair, "Entregado" | "¿A Quien se entregó?">
+  Pick<Repair, "Entregado" | "¿A Quien se entregó?" | "Enlace">
 > = [
   {
     fieldName: "Entregado",
@@ -22,6 +22,10 @@ export const deliveredSchema: Schemas<
     fieldName: "¿A Quien se entregó?",
     type: "text",
     required: (data) => data["Entregado"] === "Sí",
+  },
+  {
+    fieldName: "Enlace",
+    type:"signature"
   },
 ];
 
